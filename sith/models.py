@@ -53,4 +53,3 @@ class CollectedResponse(models.Model):
     recruit = models.ForeignKey(Recruit, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.BooleanField()
-
