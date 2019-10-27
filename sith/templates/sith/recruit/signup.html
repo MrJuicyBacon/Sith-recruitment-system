@@ -1,0 +1,53 @@
+{% extends 'sith/base.html' %}
+
+{% block title %}
+Регистрация рекрута
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Регистрация рекрута</h2>
+    {% for error in errors %}
+    <div class="alert alert-warning" role="alert">
+        {{ error }}
+    </div>
+    {% endfor %}
+    <div class="content mt-4">
+        <div class="row">
+            <div class="col-md-6 col-lg-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nameInput">Ваше имя</label>
+                        <input type="text" class="form-control" id="nameInput" placeholder="Имя" name="name" required
+                               value="{{ params.name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="planetInput">Планета обитания</label>
+                        <select class="form-control" id="planetInput" name="planet" required>
+                            {% for planet in planets %}
+                            {% if planet.id == params.planet_id %}
+                            <option value="{{ planet.id }}" selected>{{ planet.name }}</option>
+                            {% else %}
+                            <option value="{{ planet.id }}">{{ planet.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ageInput">Ваш возраст (земных лет)</label>
+                        <input type="number" min="0" class="form-control" id="ageInput" placeholder="Возраст"
+                               name="age" required value="{{ params.age }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailInput">Ваш email</label>
+                        <input type="email" class="form-control" id="emailInput" placeholder="Email" name="email"
+                               required value="{{ params.email }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Далее</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

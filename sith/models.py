@@ -28,7 +28,7 @@ class Recruit(models.Model):
     planet = models.ForeignKey(Planet, on_delete=models.CASCADE)
     age = models.IntegerField()
     email = models.CharField(max_length=100)
-    assigned_sith = models.ForeignKey(Sith, on_delete=models.CASCADE, null=True)
+    assigned_sith = models.ForeignKey(Sith, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return get_short_name(self.name)

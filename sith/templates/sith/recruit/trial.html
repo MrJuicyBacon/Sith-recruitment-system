@@ -1,0 +1,42 @@
+{% extends 'sith/base.html' %}
+
+{% block title %}
+Тестирование рекрута
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Тест для рекрута {{ recruit_name }}</h2>
+    <div class="content mt-4">
+        <div class="row">
+            <form class="w-100" method="POST">
+                {% csrf_token %}
+                {% for question in questions %}
+                <div class="card mb-4 w-100">
+                    <div class="card-body">
+                        <i>Вопрос {{ forloop.counter }}:</i>
+                        <br>
+                        <p>{{ question.text }}</p>
+                        <i>Ваш ответ:</i>
+                        <br>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="radioResponseId{{ question.id }}Yes"
+                                   name="radioResponseId{{ question.id }}" value="1"
+                                   class="custom-control-input" required>
+                            <label class="custom-control-label" for="radioResponseId{{ question.id }}Yes">Да</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="radioResponseId{{ question.id }}No"
+                                   name="radioResponseId{{ question.id }}" value="0"
+                                   class="custom-control-input" required>
+                            <label class="custom-control-label" for="radioResponseId{{ question.id }}No">Нет</label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Завершить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
