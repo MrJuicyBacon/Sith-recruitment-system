@@ -1,0 +1,53 @@
+{% extends 'sith/base.html' %}
+{% load sith_filters %}
+
+{% block title %}
+Авторизация
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Доступные рекруты на вашей планете ({{ planet }})</h2>
+    <div class="content mt-4">
+        {% if recruits.count == 0 %}
+        <p>Доступных рекрутов нет.</p>
+        {% else %}
+        {% for recruit in recruits %}
+        <div class="card mb-4">
+            <h5 class="card-header">{{ recruit.name }}</h5>
+            <div class="card-body">
+                <div class="card-text">
+                    <button class="btn btn-primary mb-2" type="button" data-toggle="collapse"
+                            data-target="#testResponsesId{{ recruit.id }}" aria-expanded="false"
+                            aria-controls="testResponsesId{{ recruit.id }}">
+                        Ответы на тест
+                    </button>
+                    <div class="collapse" id="testResponsesId{{ recruit.id }}">
+                        <p class="mb-0">Ответы на тест:</p>
+                        {% with current_responses=responses|get_questions_by_recruit_id:recruit.id %}
+                        {% if current_responses.count == None %}
+                        <p>Ответов для данного рекрута не найдено.</p>
+                        {% else %}
+                        <ul>
+                            {% for response in current_responses %}
+                            <li>{{ response.question }}</li>
+                            <b>Ответ:</b>
+                            {% if response.answer == True %}
+                            Да
+                            {% else %}
+                            Нет
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                <button href="#" class="btn btn-primary">Зачислить Рукой Тени</button>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

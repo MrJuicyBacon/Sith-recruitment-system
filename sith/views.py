@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.db import transaction
-from .models import Planet, Recruit, TestAssignment, Question, CollectedResponse
+from .models import Planet, Recruit, TestAssignment, Question, CollectedResponse, Sith
 import re
 
 
@@ -8,6 +8,7 @@ def index(request):
     return render(request, 'sith/index.html')
 
 
+# Recruit section
 def recruit_signup(request):
     errors = None
     params = None
@@ -86,3 +87,28 @@ def recruit_success(request):
         return render(request, 'sith/recruit/success.html')
     else:
         return redirect('recruit_signup')
+
+
+# Sith section
+def sith(request):
+    sith_objects = Sith.objects.all()
+    return render(request, 'sith/sith/sith.html', {'sith': sith_objects})
+
+
+def sith_recruit(request, recruit_id):
+    try:
+        current_sith = Sith.objects.select_related('planet').get(pk=recruit_id)
+    except Sith.DoesNotExist:
+        return redirect('sith')
+
+    recruits = Recruit.objects.filter(planet=current_sith.planet, assigned_sith=None)
+    responses = CollectedResponse.objects.filter(recruit__in=recruits).select_related('recruit')
+
+    responses_dict = {}
+    for response in responses:
+        if response.recruit.id in responses_dict:
+            responses_dict[response.recruit.id].append({'question': response.question, 'answer': response.answer})
+        else:
+            responses_dict[response.recruit.id] = [{'question': response.question, 'answer': response.answer}]
+
+    return render(request, 'sith/sith/recruit.html', {'planet': current_sith.planet, 'recruits': recruits, 'responses': responses_dict})
