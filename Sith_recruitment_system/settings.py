@@ -135,4 +135,9 @@ except KeyError:
     except ImportError:
         pass
 
+try:
+    DEBUG = eval(os.environ['DEBUG'])
+except KeyError:
+    pass
+
 django_heroku.settings(locals())
