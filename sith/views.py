@@ -91,6 +91,9 @@ def recruit_trial(request, recruit_id):
         return redirect('recruit_success')
 
     test_assignment = TestAssignment.objects.prefetch_related('questions').last()
+    if test_assignment is None:
+        request.session['recruit_success'] = True
+        return redirect('recruit_success')
     questions = test_assignment.questions.all()
 
     return render(request, 'sith/recruit/trial.html', {'recruit_name': str(current_recruit), 'questions': questions})
