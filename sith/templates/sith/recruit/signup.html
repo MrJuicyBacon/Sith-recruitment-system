@@ -13,6 +13,10 @@
     </div>
     {% endfor %}
     <div class="content mt-4">
+        {% if planets.count == 0 %}
+        <p>К сожалению, в данный момент регистрация невозможна.</p>
+        <p>Попробуйте позднее.</p>
+        {% else %}
         <div class="row">
             <div class="col-md-6 col-lg-4">
                 <form method="POST">
@@ -48,6 +52,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
