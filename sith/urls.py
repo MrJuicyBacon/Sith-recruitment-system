@@ -12,4 +12,6 @@ urlpatterns = [
     # Sith section
     path('sith', views.sith, name='sith'),
     path('sith/<int:recruit_id>/recruit', views.sith_recruit, name='sith_recruit'),
+    #lists
+    path('lists/all', views.lists_all, name='lists_all'),
 ]

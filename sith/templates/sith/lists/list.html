@@ -1,0 +1,25 @@
+{% extends 'sith/base.html' %}
+{% load sith_filters %}
+
+{% block title %}
+Список всех Ситхов
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ title }}</h2>
+    <div class="content mt-4">
+        {% for sith_dict in sith %}
+        <div class="card mb-4">
+            <h5 class="card-header">{{ sith_dict.name }}</h5>
+            <div class="card-body">
+                <div class="card-text">
+                    <p class="my-0">Планета: {{ sith_dict.planet }}</p>
+                    <p class="my-0">Количество Рук Тени: {{ sith_dict.recruit_count }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

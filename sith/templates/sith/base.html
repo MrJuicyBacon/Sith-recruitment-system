@@ -39,7 +39,11 @@
                                 Списки
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item active" href="#">Список 1</a>
+                                {% if request.resolver_match.url_name == 'lists_all' %}
+                                <a class="dropdown-item active" href="/lists/all">Все Ситхи</a>
+                                {% else %}
+                                <a class="dropdown-item" href="/lists/all">Все Ситхи</a>
+                                {% endif %}
                                 <a class="dropdown-item" href="#">Список 2</a>
                             </div>
                         </li>

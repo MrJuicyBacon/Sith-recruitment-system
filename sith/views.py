@@ -162,3 +162,28 @@ def sith_recruit(request, recruit_id):
         'sith': current_sith,
         'limit': True if current_sith_recruits_count >= 3 else False,
     })
+
+
+# Lists
+def lists_all(request):
+    recruits = Recruit.objects.all().select_related('assigned_sith')
+    sith_objects = Sith.objects.all().select_related('planet')
+
+    recruit_count = {}
+
+    for recruit_object in recruits:
+        if recruit_object.assigned_sith:
+            if recruit_object.assigned_sith in recruit_count:
+                recruit_count[recruit_object.assigned_sith] += 1
+            else:
+                recruit_count[recruit_object.assigned_sith] = 1
+
+    sith_out = []
+    for sith_object in sith_objects:
+        sith_out.append({
+            'name': sith_object.name,
+            'planet': sith_object.planet,
+            'recruit_count': recruit_count[sith_object] if sith_object in recruit_count else 0,
+        })
+
+    return render(request, 'sith/lists/list.html', {'title': 'Список всех ситхов', 'sith': sith_out})
