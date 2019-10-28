@@ -13,7 +13,7 @@
         <p>Доступных рекрутов нет.</p>
         {% else %}
         {% for recruit in recruits %}
-        <div class="card mb-4">
+        <div class="card mb-4 recruit">
             <h5 class="card-header">{{ recruit.name }}</h5>
             <div class="card-body">
                 <div class="card-text">
@@ -43,11 +43,71 @@
                         {% endwith %}
                     </div>
                 </div>
-                <button href="#" class="btn btn-primary">Зачислить Рукой Тени</button>
+                <button href="#" class="btn btn-primary sith-accept" data-recruit="{{ recruit.id }}">Зачислить Рукой Тени</button>
             </div>
         </div>
         {% endfor %}
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Ошибка</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modalErrorMessage"></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block custom_scripts %}
+<script>
+    function hideRecruit(recruitButton) {
+        let recruit = recruitButton.closest('.recruit');
+        $(recruit).slideUp(400, function() {
+            recruit.remove();
+        });
+    }
+    $(".sith-accept").click(function(e) {
+        e.preventDefault();
+        const recruit_id = e.target.dataset['recruit'];
+        e.target.disabled = true;
+        $.ajax({
+            type: "POST",
+            url: "/sith/{{ sith.id }}/recruit",
+            data: {
+                recruit_id: recruit_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(result) {
+                if (result.success == true) {
+                    hideRecruit(e.target);
+                } else {
+                    let message = 'Не удалось выполнить операцию, попробуйте позже.';
+                    if (result.message) {
+                        message = result.message;
+                    }
+                    $('#modalErrorMessage').text(message);
+                    $('#errorModal').modal('show');
+                }
+                e.target.disabled = false;
+            },
+            error: function(result) {
+                $('#modalErrorMessage').text('Не удалось выполнить операцию, попробуйте позже.');
+                $('#errorModal').modal('show');
+                e.target.disabled = false;
+            }
+        });
+    });
+</script>
 {% endblock %}

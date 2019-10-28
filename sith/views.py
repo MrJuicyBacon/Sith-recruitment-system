@@ -1,7 +1,22 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.db import transaction
+from django.http import JsonResponse, HttpResponseNotFound
+from django.core.mail import send_mail
 from .models import Planet, Recruit, TestAssignment, Question, CollectedResponse, Sith
 import re
+import threading
+
+
+class EmailThread(threading.Thread):
+    def __init__(self, subject, message, sender, recipients,  *args, **kwargs):
+        self.recipients = recipients
+        self.sender = sender
+        self.message = message
+        self.subject = subject
+        super(EmailThread, self).__init__(*args, **kwargs)
+
+    def run(self):
+        send_mail(self.subject, self.message, self.sender, self.recipients, fail_silently=True)
 
 
 def index(request):
@@ -101,6 +116,28 @@ def sith_recruit(request, recruit_id):
     except Sith.DoesNotExist:
         return redirect('sith')
 
+    if request.method == 'POST':
+        if 'recruit_id' in request.POST:
+            try:
+                current_recruit = Recruit.objects.get(pk=request.POST['recruit_id'])
+            except Recruit.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Невозможно завербовать данного рекрута. '
+                               'Возможно его уже завербовал кто-то другой.'
+                })
+            current_recruit.assigned_sith = current_sith
+            current_recruit.save()
+            EmailThread(
+                'Вам назначен Ситх',
+                f'Вы приняты Рукой Тени.\nВаш Ситх - {current_sith.name}',
+                'admin@sithrecruitment.com',
+                [current_recruit.email]
+            ).start()
+            return JsonResponse({'success': True})
+        else:
+            return HttpResponseNotFound()
+
     recruits = Recruit.objects.filter(planet=current_sith.planet, assigned_sith=None)
     responses = CollectedResponse.objects.filter(recruit__in=recruits).select_related('recruit')
 
@@ -111,4 +148,9 @@ def sith_recruit(request, recruit_id):
         else:
             responses_dict[response.recruit.id] = [{'question': response.question, 'answer': response.answer}]
 
-    return render(request, 'sith/sith/recruit.html', {'planet': current_sith.planet, 'recruits': recruits, 'responses': responses_dict})
+    return render(request, 'sith/sith/recruit.html', {
+        'planet': current_sith.planet,
+        'recruits': recruits,
+        'responses': responses_dict,
+        'sith': current_sith
+    })
