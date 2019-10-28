@@ -116,15 +116,22 @@ def sith_recruit(request, recruit_id):
     except Sith.DoesNotExist:
         return redirect('sith')
 
+    current_sith_recruits_count = len(Recruit.objects.filter(assigned_sith=current_sith))
+
     if request.method == 'POST':
         if 'recruit_id' in request.POST:
             try:
-                current_recruit = Recruit.objects.get(pk=request.POST['recruit_id'])
+                current_recruit = Recruit.objects.get(pk=request.POST['recruit_id'], assigned_sith=None)
             except Recruit.DoesNotExist:
                 return JsonResponse({
                     'success': False,
                     'message': 'Невозможно завербовать данного рекрута. '
                                'Возможно его уже завербовал кто-то другой.'
+                })
+            if current_sith_recruits_count >= 3:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Вы достигли лимита рекрутов.'
                 })
             current_recruit.assigned_sith = current_sith
             current_recruit.save()
@@ -152,5 +159,6 @@ def sith_recruit(request, recruit_id):
         'planet': current_sith.planet,
         'recruits': recruits,
         'responses': responses_dict,
-        'sith': current_sith
+        'sith': current_sith,
+        'limit': True if current_sith_recruits_count >= 3 else False,
     })

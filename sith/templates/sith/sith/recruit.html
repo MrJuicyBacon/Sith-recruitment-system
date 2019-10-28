@@ -2,12 +2,17 @@
 {% load sith_filters %}
 
 {% block title %}
-Авторизация
+Завербовать рекрута
 {% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <h2>Доступные рекруты на вашей планете ({{ planet }})</h2>
+    {% if limit %}
+    <div class="alert alert-warning" role="alert">
+        Вы достигли лимита привязанных рекрутов. Завербовать больше нельзя.
+    </div>
+    {% endif %}
     <div class="content mt-4">
         {% if recruits.count == 0 %}
         <p>Доступных рекрутов нет.</p>
