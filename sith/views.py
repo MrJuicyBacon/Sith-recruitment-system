@@ -186,4 +186,25 @@ def lists_all(request):
             'recruit_count': recruit_count[sith_object] if sith_object in recruit_count else 0,
         })
 
-    return render(request, 'sith/lists/list.html', {'title': 'Список всех ситхов', 'sith': sith_out})
+    return render(request, 'sith/lists/list.html', {'title': 'Список всех Ситхов', 'sith': sith_out})
+
+
+def lists_more_than_one(request):
+    recruits = Recruit.objects.exclude(assigned_sith=None).select_related('assigned_sith__planet')
+
+    sith_dicts = {}
+
+    for recruit_object in recruits:
+        if recruit_object.assigned_sith in sith_dicts:
+            sith_dicts[recruit_object.assigned_sith]['recruit_count'] += 1
+        else:
+            sith_dicts[recruit_object.assigned_sith] = {
+                'name': recruit_object.assigned_sith.name,
+                'planet': recruit_object.assigned_sith.planet,
+                'recruit_count': 1,
+            }
+    sith_out = []
+    for sith_dict in sith_dicts.values():
+        if sith_dict['recruit_count'] > 1:
+            sith_out.append(sith_dict)
+    return render(request, 'sith/lists/list.html', {'title': 'Список Ситхов с двумя и более рекрутами', 'sith': sith_out})

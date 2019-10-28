@@ -14,4 +14,5 @@ urlpatterns = [
     path('sith/<int:recruit_id>/recruit', views.sith_recruit, name='sith_recruit'),
     #lists
     path('lists/all', views.lists_all, name='lists_all'),
+    path('lists/more_than_one', views.lists_more_than_one, name='lists_more_than_one'),
 ]

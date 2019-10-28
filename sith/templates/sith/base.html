@@ -44,7 +44,12 @@
                                 {% else %}
                                 <a class="dropdown-item" href="/lists/all">Все Ситхи</a>
                                 {% endif %}
-                                <a class="dropdown-item" href="#">Список 2</a>
+                                {% if request.resolver_match.url_name == 'lists_more_than_one' %}
+                                <a class="dropdown-item active" href="/lists/more_than_one">Ситхи с двумя и более
+                                    рекрутами</a>
+                                {% else %}
+                                <a class="dropdown-item" href="/lists/more_than_one">Ситхи с двумя и более рекрутами</a>
+                                {% endif %}
                             </div>
                         </li>
                     </ul>
